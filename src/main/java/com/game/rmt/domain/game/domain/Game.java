@@ -1,7 +1,7 @@
-package com.game.rmt.game;
+package com.game.rmt.domain.game.domain;
 
-import com.game.rmt.platform.Platform;
-import com.game.rmt.product.Product;
+import com.game.rmt.domain.platform.domain.Platform;
+import com.game.rmt.domain.product.domain.Product;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

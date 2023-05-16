@@ -1,6 +1,6 @@
-package com.game.rmt.account;
+package com.game.rmt.domain.account.domain;
 
-import com.game.rmt.product.Product;
+import com.game.rmt.domain.product.domain.Product;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
