@@ -1,8 +1,10 @@
 package com.game.rmt;
 
+import com.game.rmt.account.Account;
 import com.game.rmt.game.Game;
 import com.game.rmt.platform.Platform;
 import com.game.rmt.product.Product;
+import com.game.rmt.product.QProduct;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,10 +15,12 @@ import org.springframework.test.annotation.Commit;
 
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
+import java.time.LocalDate;
 import java.util.List;
 
 import static com.game.rmt.game.QGame.game;
 import static com.game.rmt.platform.QPlatform.platform;
+import static com.game.rmt.product.QProduct.product;
 
 @SpringBootTest
 @Transactional
@@ -54,11 +58,45 @@ class RmtApplicationTests {
 		em.persist(umamusume);
 	}
 
+	private void initializeProductTable() {
+		Game lol = queryFactory
+				.selectFrom(game)
+				.where(game.name.eq("LOL"))
+				.fetchOne();
+
+		Game umamusume = queryFactory
+				.selectFrom(game)
+				.where(game.name.eq("Umamusume"))
+				.fetchOne();
+
+		Product fiveThousandJewel = new Product("5000 Jewel", umamusume);
+		Product riotPoint = new Product("Riot Point", lol);
+
+		em.persist(fiveThousandJewel);
+		em.persist(riotPoint);
+	}
+
+	private void initializeAccountTable() {
+		Product fiveThousandJewel = queryFactory
+				.selectFrom(product)
+				.where(product.productName.eq("5000 Jewel"))
+				.fetchOne();
+
+		Product riotPoint = queryFactory
+				.selectFrom(product)
+				.where(product.productName.eq("Riot Point"))
+				.fetchOne();
+
+		Account account1 = new Account(99000, LocalDate.now(), fiveThousandJewel);
+		Account account2 = new Account(15000, LocalDate.now(), "note", riotPoint);
+	}
+
 	@BeforeEach
 	public void before() {
 		queryFactory = new JPAQueryFactory(em);
 		initializePlatformTable();
 		initializeGameTable();
+		initializeProductTable();
 	}
 
 	@Test
@@ -131,6 +169,23 @@ class RmtApplicationTests {
 		em.persist(riotPoint);
 	}
 
+	@Test
+	public void insertAccount() {
+		Product fiveThousandJewel = queryFactory
+				.selectFrom(product)
+				.where(product.productName.eq("5000 Jewel"))
+				.fetchOne();
 
+		Product riotPoint = queryFactory
+				.selectFrom(product)
+				.where(product.productName.eq("Riot Point"))
+				.fetchOne();
+
+		Account account1 = new Account(99000, LocalDate.now(), fiveThousandJewel);
+		Account account2 = new Account(15000, LocalDate.now(), "note", riotPoint);
+
+		em.persist(account1);
+		em.persist(account2);
+	}
 
 }
