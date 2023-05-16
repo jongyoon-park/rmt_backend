@@ -2,8 +2,12 @@ package com.game.rmt;
 
 import com.game.rmt.domain.account.domain.Account;
 import com.game.rmt.domain.game.domain.Game;
+import com.game.rmt.domain.game.domain.QGame;
 import com.game.rmt.domain.platform.domain.Platform;
+import com.game.rmt.domain.platform.domain.QPlatform;
+import com.game.rmt.domain.platform.repository.PlatformRepository;
 import com.game.rmt.domain.product.domain.Product;
+import com.game.rmt.domain.product.domain.QProduct;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,9 +21,10 @@ import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 
-import static com.game.rmt.game.QGame.game;
-import static com.game.rmt.platform.QPlatform.platform;
-import static com.game.rmt.product.QProduct.product;
+import static com.game.rmt.domain.game.domain.QGame.game;
+import static com.game.rmt.domain.platform.domain.QPlatform.platform;
+import static com.game.rmt.domain.product.domain.QProduct.product;
+
 
 @SpringBootTest
 @Transactional
@@ -30,6 +35,8 @@ class RmtApplicationTests {
 	EntityManager em;
 
 	JPAQueryFactory queryFactory;
+
+	PlatformRepository platformRepository;
 
 	private void initializePlatformTable() {
 		Platform phone = new Platform("Phone");
@@ -186,5 +193,4 @@ class RmtApplicationTests {
 		em.persist(account1);
 		em.persist(account2);
 	}
-
 }
