@@ -2,12 +2,10 @@ package com.game.rmt.game;
 
 import com.game.rmt.platform.Platform;
 import com.game.rmt.product.Product;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
