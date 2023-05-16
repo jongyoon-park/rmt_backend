@@ -1,10 +1,9 @@
-package com.game.rmt.product;
+package com.game.rmt.domain.product.domain;
 
-import com.game.rmt.account.Account;
-import com.game.rmt.game.Game;
+import com.game.rmt.domain.account.domain.Account;
+import com.game.rmt.domain.game.domain.Game;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;

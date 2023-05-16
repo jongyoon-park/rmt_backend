@@ -1,7 +1,6 @@
-package com.game.rmt.platform;
+package com.game.rmt.domain.platform.domain;
 
-import com.game.rmt.game.Game;
-import lombok.AccessLevel;
+import com.game.rmt.domain.game.domain.Game;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;

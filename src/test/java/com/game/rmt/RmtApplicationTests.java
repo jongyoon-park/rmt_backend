@@ -1,10 +1,9 @@
 package com.game.rmt;
 
-import com.game.rmt.account.Account;
-import com.game.rmt.game.Game;
-import com.game.rmt.platform.Platform;
-import com.game.rmt.product.Product;
-import com.game.rmt.product.QProduct;
+import com.game.rmt.domain.account.domain.Account;
+import com.game.rmt.domain.game.domain.Game;
+import com.game.rmt.domain.platform.domain.Platform;
+import com.game.rmt.domain.product.domain.Product;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
