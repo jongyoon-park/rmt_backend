@@ -10,11 +10,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PlatformDTO {
 
-    private Long id;
+    private Long platformId;
     private String platformName;
 
     public PlatformDTO (Platform platform) {
-        this.id = platform.getId();
+        this.platformId = platform.getId();
         this.platformName = platform.getName();
     }
 }
