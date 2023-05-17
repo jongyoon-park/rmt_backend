@@ -18,10 +18,14 @@ public class PlatformService {
     public List<PlatformDTO> getPlatforms() {
         List<Platform> platformList = platformRepository.findAll();
 
-        if (platformList == null) {
+        if (platformList == null || platformList.isEmpty()) {
             return new ArrayList<>();
         }
 
+        return convertPlatformDTOList(platformList);
+    }
+
+    private List<PlatformDTO> convertPlatformDTOList(List<Platform> platformList) {
         List<PlatformDTO> platformDTOList = new ArrayList<>();
 
         for (Platform platform : platformList) {
