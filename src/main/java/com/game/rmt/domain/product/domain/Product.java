@@ -24,6 +24,7 @@ public class Product {
 
     private String productName;
     private LocalDateTime createDate;
+    private boolean isActivated;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "game_id")
