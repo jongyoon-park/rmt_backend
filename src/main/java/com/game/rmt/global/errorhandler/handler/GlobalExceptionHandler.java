@@ -1,6 +1,7 @@
 package com.game.rmt.global.errorhandler.handler;
 
 
+import com.game.rmt.global.errorhandler.exception.BadRequestException;
 import com.game.rmt.global.errorhandler.exception.ErrorCode;
 import com.game.rmt.global.errorhandler.exception.NotFoundException;
 import com.game.rmt.global.errorhandler.response.ErrorResponse;
@@ -11,6 +12,11 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+
+    @ExceptionHandler(BadRequestException.class)
+    protected ResponseEntity<ErrorResponse> handleBadRequestException(BadRequestException e) {
+        return handleCustomExceptionInternal(e.getErrorCode());
+    }
 
     @ExceptionHandler(NotFoundException.class)
     protected ResponseEntity<ErrorResponse> handleNotFoundException(NotFoundException e) {

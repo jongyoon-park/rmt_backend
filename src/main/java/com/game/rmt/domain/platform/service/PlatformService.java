@@ -3,6 +3,8 @@ package com.game.rmt.domain.platform.service;
 import com.game.rmt.domain.platform.domain.Platform;
 import com.game.rmt.domain.platform.dto.PlatformDTO;
 import com.game.rmt.domain.platform.repository.PlatformRepository;
+import com.game.rmt.global.errorhandler.exception.ErrorCode;
+import com.game.rmt.global.errorhandler.exception.NotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +25,16 @@ public class PlatformService {
         }
 
         return convertPlatformDTOList(platformList);
+    }
+
+    public Platform getPlatform(Long id) {
+        Platform platform = platformRepository.findPlatformById(id);
+
+        if (platform == null) {
+            throw new NotFoundException(ErrorCode.NOT_FOUND_PLATFORM);
+        }
+
+        return platform;
     }
 
     private List<PlatformDTO> convertPlatformDTOList(List<Platform> platformList) {
