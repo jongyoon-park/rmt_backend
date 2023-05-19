@@ -7,6 +7,7 @@ import com.game.rmt.domain.platform.dto.PlatformDTO;
 import com.game.rmt.domain.platform.repository.PlatformRepository;
 import com.game.rmt.domain.product.domain.Product;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,6 @@ import java.util.List;
 import static com.game.rmt.domain.game.domain.QGame.game;
 import static com.game.rmt.domain.platform.domain.QPlatform.platform;
 import static com.game.rmt.domain.product.domain.QProduct.product;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
@@ -123,5 +123,12 @@ class PlatformServiceTest {
         }
 
         assertEquals(platformDTOList.size(), 2);
+    }
+
+    @Test
+    public void getPlatform() {
+        Platform findPlatform = platformRepository.findPlatformById((long) 1);
+
+        Assertions.assertThat(findPlatform).isNotNull();
     }
 }

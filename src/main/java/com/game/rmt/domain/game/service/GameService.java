@@ -3,7 +3,10 @@ package com.game.rmt.domain.game.service;
 import com.game.rmt.domain.game.domain.Game;
 import com.game.rmt.domain.game.dto.GameDTO;
 import com.game.rmt.domain.game.dto.GameSearchFilter;
+import com.game.rmt.domain.game.dto.NewGameRequest;
 import com.game.rmt.domain.game.repository.GameRepository;
+import com.game.rmt.domain.platform.domain.Platform;
+import com.game.rmt.domain.platform.service.PlatformService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +18,7 @@ import java.util.List;
 public class GameService {
 
     private final GameRepository gameRepository;
+    private final PlatformService platformService;
 
     public List<GameDTO> getGames(GameSearchFilter gameSearchFilter) {
         List<Game> gameList = gameRepository.findGames(gameSearchFilter);
@@ -24,6 +28,14 @@ public class GameService {
         }
 
         return convertGameDTOList(gameList);
+    }
+
+    public GameDTO createGame(NewGameRequest newGameRequest) {
+        newGameRequest.isValidParam();
+        Platform findPlatform = platformService.getPlatform(newGameRequest.getPlatformId());
+        Game newGame = new Game(newGameRequest.getGameName(), findPlatform);
+
+        return new GameDTO(gameRepository.save(newGame));
     }
 
     private List<GameDTO> convertGameDTOList(List<Game> gameList) {

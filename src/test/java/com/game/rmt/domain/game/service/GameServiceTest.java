@@ -7,8 +7,9 @@ import com.game.rmt.domain.game.dto.GameSearchFilter;
 import com.game.rmt.domain.game.repository.GameRepository;
 import com.game.rmt.domain.platform.domain.Platform;
 import com.game.rmt.domain.product.domain.Product;
+import com.game.rmt.global.errorhandler.exception.ErrorCode;
+import com.game.rmt.global.errorhandler.exception.NotFoundException;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ import java.util.List;
 import static com.game.rmt.domain.game.domain.QGame.game;
 import static com.game.rmt.domain.platform.domain.QPlatform.platform;
 import static com.game.rmt.domain.product.domain.QProduct.product;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
@@ -137,6 +139,29 @@ class GameServiceTest {
             gameDTOList.add(new GameDTO(game));
         }
 
-        Assertions.assertThat(gameDTOList.size()).isEqualTo(1);
+        assertThat(gameDTOList.size()).isEqualTo(1);
     }
+
+    @Test
+    public void insertGame() {
+        Platform pc = queryFactory
+                .selectFrom(platform)
+                .where(platform.id.eq((long) 4))
+                .fetchOne();
+
+        if (pc == null) {
+            throw new NotFoundException(ErrorCode.NOT_FOUND_PLATFORM);
+        }
+        
+        Game game = new Game("overwatch", pc);
+        gameRepository.save(game);
+
+        em.flush();
+        em.clear();
+
+        List<Game> games = gameRepository.findAll();
+
+        assertThat(games.size()).isEqualTo(3);
+    }
+
 }
