@@ -33,6 +33,14 @@ public class GameRepositoryImpl implements GameRepositoryCustom {
                 .fetch();
     }
 
+    @Override
+    public Game findGameById(Long gameId) {
+        return queryFactory
+                .selectFrom(game)
+                .where(equalGameId(gameId))
+                .fetchOne();
+    }
+
     private BooleanExpression searchGameNameBySearchFilter(GameSearchFilter gameSearchFilter) {
         return gameSearchFilter.isValidSearchGameName() ? containGameName(gameSearchFilter.getSearchGameName()) : null;
     }
@@ -47,5 +55,9 @@ public class GameRepositoryImpl implements GameRepositoryCustom {
 
     private BooleanExpression containGameName(String gameName) {
         return game.name.contains(gameName);
+    }
+
+    private BooleanExpression equalGameId(long gameId) {
+        return game.id.eq(gameId);
     }
 }

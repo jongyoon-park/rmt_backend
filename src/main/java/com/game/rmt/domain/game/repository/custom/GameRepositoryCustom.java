@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface GameRepositoryCustom {
     List<Game> findGames(GameSearchFilter gameSearchFilter);
+    Game findGameById(Long gameId);
 }
