@@ -24,4 +24,14 @@ public class ProductController {
     public ProductDTO createProduct(@RequestBody NewProductRequest newProductRequest) {
         return productService.createProduct(newProductRequest);
     }
+
+    @PostMapping("/activated/{productId}")
+    public ProductDTO activateProduct(@PathVariable("productId") long productId) {
+        return productService.activateProduct(productId);
+    }
+
+    @PostMapping("/unactivated/{productId}")
+    public ProductDTO deactivateProduct(@PathVariable("productId") long productId) {
+        return productService.deactivateProduct(productId);
+    }
 }
