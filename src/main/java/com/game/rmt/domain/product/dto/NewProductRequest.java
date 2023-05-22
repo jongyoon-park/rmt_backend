@@ -15,6 +15,7 @@ public class NewProductRequest implements CreateRequest {
     private Long gameId;
     private String productName;
 
+    @Override
     public void isValidParam() {
         if (isNotNull(platformId) && isNotNull(gameId) && isValidProductName()) {
             return;

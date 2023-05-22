@@ -7,5 +7,6 @@ import java.util.List;
 
 public interface ProductRepositoryCustom {
     List<Product> findProducts(ProductSearchFilter productSearchFilter);
+    Product findProductById(Long productId);
     Product findProductByGameIdAndProductName(Long gameId, String productName);
 }

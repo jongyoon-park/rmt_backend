@@ -10,6 +10,7 @@ import com.game.rmt.domain.product.dto.ProductSearchFilter;
 import com.game.rmt.domain.product.repository.ProductRepository;
 import com.game.rmt.global.errorhandler.exception.BadRequestException;
 import com.game.rmt.global.errorhandler.exception.ErrorCode;
+import com.game.rmt.global.errorhandler.exception.NotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -37,6 +38,48 @@ public class ProductService {
     public ProductDTO createProduct(NewProductRequest newProductRequest) {
         Game validGame = validateCreateProduct(newProductRequest);
         return saveProduct(new Product(newProductRequest.getProductName(), validGame));
+    }
+
+    public ProductDTO activateProduct(long productId) {
+        Product product = validateActivateProduct(productId);
+        product.updateActivated();
+        return saveProduct(product);
+    }
+
+    public ProductDTO deactivateProduct(long productId) {
+        Product product = validateDeactivateProduct(productId);
+        product.updateUnActivated();
+        return saveProduct(product);
+    }
+
+    public Product getProduct(long productId) {
+        Product product = productRepository.findProductById(productId);
+
+        if (product == null) {
+            throw new NotFoundException(ErrorCode.NOT_FOUND_PRODUCT);
+        }
+
+        return product;
+    }
+
+    private Product validateActivateProduct(long productId) {
+        Product product = getProduct(productId);
+
+        if (product.isActivated()) {
+            throw new BadRequestException(ErrorCode.BAD_REQUEST_UPDATE_PRODUCT);
+        }
+
+        return product;
+    }
+
+    private Product validateDeactivateProduct(long productId) {
+        Product product = getProduct(productId);
+
+        if (!product.isActivated()) {
+            throw new BadRequestException(ErrorCode.BAD_REQUEST_UPDATE_PRODUCT);
+        }
+
+        return product;
     }
 
     private ProductDTO saveProduct(Product product) {

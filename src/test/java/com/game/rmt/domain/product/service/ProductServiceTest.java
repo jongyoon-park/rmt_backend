@@ -13,8 +13,8 @@ import com.game.rmt.domain.product.dto.ProductSearchFilter;
 import com.game.rmt.domain.product.repository.ProductRepository;
 import com.game.rmt.global.errorhandler.exception.BadRequestException;
 import com.game.rmt.global.errorhandler.exception.ErrorCode;
+import com.game.rmt.global.errorhandler.exception.NotFoundException;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -182,7 +182,28 @@ class ProductServiceTest {
         ProductDTO save = new ProductDTO(productRepository.save(product));
 
         assertThat(save.getProductName()).isEqualTo(request.getProductName());
+    }
 
+    @Test
+    void updateIsUnactivated() {
+        //받아야할 정보 : productId
+        //product 유무 체크
+        Product findProduct = queryFactory.selectFrom(product)
+                .where(product.id.eq((long) 5))
+                .fetchOne();
 
+        if (findProduct == null) {
+            throw new NotFoundException(ErrorCode.NOT_FOUND_PRODUCT);
+        }
+
+        //바꾸고자 하는 상태가 현재 상태와 동일한지 체크 : 동일하면 반려
+        if (findProduct.isActivated()) {
+            throw new BadRequestException(ErrorCode.BAD_REQUEST_UPDATE_PRODUCT);
+        }
+
+        findProduct.updateUnActivated();
+        ProductDTO save = new ProductDTO(productRepository.save(findProduct));
+
+        assertThat(save.isActivated()).isTrue();
     }
 }

@@ -12,11 +12,13 @@ import lombok.NoArgsConstructor;
 public class ProductDTO {
     private Long productId;
     private String productName;
+    private boolean isActivated;
     private GameDTO game;
 
     public ProductDTO(Product product) {
         this.productId = product.getId();
         this.productName = product.getProductName();
+        this.isActivated = product.isActivated();
         this.game = new GameDTO(product.getGame());
     }
 }

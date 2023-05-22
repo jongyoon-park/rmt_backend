@@ -38,6 +38,14 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
     }
 
     @Override
+    public Product findProductById(Long productId) {
+        return queryFactory
+                .selectFrom(product)
+                .where(equalProductId(productId))
+                .fetchOne();
+    }
+
+    @Override
     public Product findProductByGameIdAndProductName(Long gameId, String productName) {
         return queryFactory
                 .selectFrom(product)
@@ -79,6 +87,10 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
     private BooleanExpression equalProductName(String productName) {
         return product.productName.eq(productName);
+    }
+
+    private BooleanExpression equalProductId(Long productId) {
+        return product.id.eq(productId);
     }
 
 }

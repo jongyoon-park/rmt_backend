@@ -43,6 +43,14 @@ public class Product {
         }
     }
 
+    public void updateActivated() {
+        this.isActivated = true;
+    }
+
+    public void updateUnActivated() {
+        this.isActivated = false;
+    }
+
     private void changeGame(Game game) {
         this.game = game;
         game.getProducts().add(this);

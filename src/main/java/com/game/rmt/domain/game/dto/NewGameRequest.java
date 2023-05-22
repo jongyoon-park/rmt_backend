@@ -14,6 +14,7 @@ public class NewGameRequest implements CreateRequest {
     private Long platformId;
     private String gameName;
 
+    @Override
     public void isValidParam() {
         if (isNotNull(platformId) && isValidGameName()) {
             return;
