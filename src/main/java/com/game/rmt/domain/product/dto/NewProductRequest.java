@@ -1,4 +1,4 @@
-package com.game.rmt.domain.game.dto;
+package com.game.rmt.domain.product.dto;
 
 import com.game.rmt.global.errorhandler.exception.BadRequestException;
 import com.game.rmt.global.errorhandler.exception.ErrorCode;
@@ -10,19 +10,20 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class NewGameRequest implements CreateRequest {
+public class NewProductRequest implements CreateRequest {
     private Long platformId;
-    private String gameName;
+    private Long gameId;
+    private String productName;
 
     public void isValidParam() {
-        if (isNotNull(platformId) && isValidGameName()) {
+        if (isNotNull(platformId) && isNotNull(gameId) && isValidProductName()) {
             return;
         }
 
-        throw new BadRequestException(ErrorCode.BAD_REQUEST_CREATE_GAME);
+        throw new BadRequestException(ErrorCode.BAD_REQUEST_CREATE_PRODUCT);
     }
 
-    private boolean isValidGameName() {
-        return isValidString(gameName);
+    private boolean isValidProductName() {
+        return isValidString(productName);
     }
 }

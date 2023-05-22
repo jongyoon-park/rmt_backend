@@ -37,6 +37,19 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                 .fetch();
     }
 
+    @Override
+    public Product findProductByGameIdAndProductName(Long gameId, String productName) {
+        return queryFactory
+                .selectFrom(product)
+                .join(product.game, game)
+                .fetchJoin()
+                .where(
+                        equalGameId(gameId),
+                        equalProductName(productName)
+                )
+                .fetchOne();
+    }
+
     private BooleanExpression searchPlatformIdBySearchFilter(ProductSearchFilter productSearchFilter) {
         return productSearchFilter.isValidSearchPlatformId() ?
                 equalPlatformId(productSearchFilter.getSearchPlatformId()) : null;
@@ -62,6 +75,10 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
     private BooleanExpression equalIsActivated(boolean isActivated) {
         return product.isActivated.eq(isActivated);
+    }
+
+    private BooleanExpression equalProductName(String productName) {
+        return product.productName.eq(productName);
     }
 
 }

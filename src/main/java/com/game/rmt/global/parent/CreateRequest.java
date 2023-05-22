@@ -2,7 +2,7 @@ package com.game.rmt.global.parent;
 
 import org.springframework.util.StringUtils;
 
-public interface Filter {
+public interface CreateRequest {
     default boolean isNotNull(Object object) {
         return object != null;
     }

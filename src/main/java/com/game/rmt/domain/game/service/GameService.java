@@ -7,6 +7,8 @@ import com.game.rmt.domain.game.dto.NewGameRequest;
 import com.game.rmt.domain.game.repository.GameRepository;
 import com.game.rmt.domain.platform.domain.Platform;
 import com.game.rmt.domain.platform.service.PlatformService;
+import com.game.rmt.global.errorhandler.exception.ErrorCode;
+import com.game.rmt.global.errorhandler.exception.NotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +38,16 @@ public class GameService {
         Game newGame = new Game(newGameRequest.getGameName(), findPlatform);
 
         return new GameDTO(gameRepository.save(newGame));
+    }
+
+    public Game getGame(long id) {
+        Game game = gameRepository.findGameById(id);
+
+        if (game == null) {
+            throw new NotFoundException(ErrorCode.NOT_FOUND_GAME);
+        }
+
+        return game;
     }
 
     private List<GameDTO> convertGameDTOList(List<Game> gameList) {
