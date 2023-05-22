@@ -36,6 +36,7 @@ public class Product {
     public Product(String productName, Game game) {
         this.productName = productName;
         this.createDate = LocalDateTime.now();
+        this.isActivated = true;
 
         if (game != null) {
             changeGame(game);
