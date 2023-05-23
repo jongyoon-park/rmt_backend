@@ -22,6 +22,6 @@ public class PlatformRepositoryImpl implements PlatformRepositoryCustom {
                 .select(platform)
                 .from(platform)
                 .where(platform.id.eq(id))
-                .fetchOne();
+                .fetchFirst();
     }
 }
