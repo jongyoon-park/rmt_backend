@@ -1,0 +1,195 @@
+package com.game.rmt.domain.account.service;
+
+import com.game.rmt.domain.account.domain.Account;
+import com.game.rmt.domain.account.dto.AccountResponse;
+import com.game.rmt.domain.account.dto.AccountSearchFilter;
+import com.game.rmt.domain.game.domain.Game;
+import com.game.rmt.domain.game.repository.GameRepository;
+import com.game.rmt.domain.platform.domain.Platform;
+import com.game.rmt.domain.platform.repository.PlatformRepository;
+import com.game.rmt.domain.platform.service.PlatformService;
+import com.game.rmt.domain.product.domain.Product;
+import com.game.rmt.domain.product.repository.ProductRepository;
+import com.querydsl.jpa.impl.JPAQuery;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.support.PageableExecutionUtils;
+import org.springframework.test.annotation.Commit;
+
+import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.game.rmt.domain.account.domain.QAccount.account;
+import static com.game.rmt.domain.game.domain.QGame.game;
+import static com.game.rmt.domain.platform.domain.QPlatform.platform;
+import static com.game.rmt.domain.product.domain.QProduct.product;
+import static org.assertj.core.api.Assertions.assertThat;
+
+@SpringBootTest
+@Transactional
+@Commit
+class AccountServiceTest {
+    @Autowired
+    EntityManager em;
+
+    JPAQueryFactory queryFactory;
+
+    @Autowired
+    GameRepository gameRepository;
+
+    @Autowired
+    ProductRepository productRepository;
+
+    @Autowired
+    PlatformRepository platformRepository;
+
+    @Autowired
+    PlatformService platformService;
+
+    private void initializePlatformTable() {
+        Platform phone = new Platform("Phone");
+        Platform pc = new Platform("PC");
+
+        em.persist(phone);
+        em.persist(pc);
+    }
+
+    private void initializeGameTable() {
+        Platform pc = queryFactory
+                .selectFrom(platform)
+                .where(platform.name.eq("PC"))
+                .fetchOne();
+
+        Platform phone = queryFactory
+                .selectFrom(platform)
+                .where(platform.name.eq("Phone"))
+                .fetchOne();
+
+        Game lol = new Game("LOL", pc);
+        Game umamusume = new Game("Umamusume", phone);
+
+        em.persist(lol);
+        em.persist(umamusume);
+    }
+
+    private void initializeProductTable() {
+        Game lol = queryFactory
+                .selectFrom(game)
+                .where(game.name.eq("LOL"))
+                .fetchOne();
+
+        Game umamusume = queryFactory
+                .selectFrom(game)
+                .where(game.name.eq("Umamusume"))
+                .fetchOne();
+
+        Product fiveThousandJewel = new Product("5000 Jewel", umamusume);
+        Product riotPoint = new Product("Riot Point", lol);
+
+        em.persist(fiveThousandJewel);
+        em.persist(riotPoint);
+    }
+
+    private void initializeAccountTable() {
+        Product fiveThousandJewel = queryFactory
+                .selectFrom(product)
+                .where(product.productName.eq("5000 Jewel"))
+                .fetchOne();
+
+        Product riotPoint = queryFactory
+                .selectFrom(product)
+                .where(product.productName.eq("Riot Point"))
+                .fetchOne();
+
+        Account account1 = new Account(99000, LocalDate.now(), fiveThousandJewel);
+        Account account2 = new Account(15000, LocalDate.now(), "note", riotPoint);
+
+        em.persist(account1);
+        em.persist(account2);
+    }
+
+    @BeforeEach
+    public void before() {
+        queryFactory = new JPAQueryFactory(em);
+        initializePlatformTable();
+        initializeGameTable();
+        initializeProductTable();
+        initializeAccountTable();
+
+        em.flush();
+        em.clear();
+    }
+
+    @Test
+    public void getAccounts() {
+        // filter 생성
+        AccountSearchFilter filter = new AccountSearchFilter(
+                LocalDate.parse("2022-08-17"),
+                LocalDate.parse("2023-08-17"),
+                null,
+                null,
+                null,
+                null,
+                null,
+                10,
+                0
+        );
+        // pageable 생성
+        PageRequest pageable = PageRequest.of(filter.getSearchPage(), filter.getSearchLimit());
+        // repository에서 filter에 따라 데이터 검색
+        List<Account> accountList = queryFactory
+                .selectFrom(account)
+                .join(account.product, product)
+                .fetchJoin()
+                .join(product.game, game)
+                .fetchJoin()
+                .join(game.platform, platform)
+                .fetchJoin()
+                .where(
+                        account.purchaseDate.between(null, filter.getSearchEndDate())
+                        /*account.price.between(filter.getMinPrice(), filter.getMaxPrice()),
+                        product.productName.contains(filter.getProductName()),
+                        game.id.in(filter.getGameIdList()),
+                        platform.id.in(filter.getPlatformIdList())*/
+                )
+                .limit(pageable.getPageSize())
+                .offset(pageable.getOffset())
+                .fetch();
+        // 검색한 데이터를 DTO로 변환하기
+        List<AccountResponse> accountResponseList = new ArrayList<>();
+        if (accountList.size() > 0) {
+            accountList.forEach(account -> accountResponseList.add(new AccountResponse(account)));
+        }
+        // 조건에 맞는 전체 데이터를 가져오는 count 쿼리 함수 생성
+        JPAQuery<Account> countQuery = queryFactory
+                .selectFrom(account)
+                .join(account.product, product)
+                .fetchJoin()
+                .join(product.game, game)
+                .fetchJoin()
+                .join(game.platform, platform)
+                .fetchJoin()
+                .where(
+                        account.purchaseDate.between(null, filter.getSearchEndDate())
+                        /*account.price.between(filter.getMinPrice(), filter.getMaxPrice()),
+                        product.productName.contains(filter.getProductName()),
+                        game.id.in(filter.getGameIdList()),
+                        platform.id.in(filter.getPlatformIdList())*/
+                );
+
+
+        // PageableExecutionUtils.getPage()로 페이징 처리
+        Page<AccountResponse> page = PageableExecutionUtils.getPage(accountResponseList, pageable, () -> countQuery.fetch().size());
+
+        assertThat(page.getTotalElements()).isEqualTo(2);
+    }
+}

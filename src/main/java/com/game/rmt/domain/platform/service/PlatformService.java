@@ -5,14 +5,14 @@ import com.game.rmt.domain.platform.dto.PlatformDTO;
 import com.game.rmt.domain.platform.repository.PlatformRepository;
 import com.game.rmt.global.errorhandler.exception.ErrorCode;
 import com.game.rmt.global.errorhandler.exception.NotFoundException;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class PlatformService {
 
     private final PlatformRepository platformRepository;

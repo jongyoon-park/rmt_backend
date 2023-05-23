@@ -9,14 +9,14 @@ import com.game.rmt.domain.platform.domain.Platform;
 import com.game.rmt.domain.platform.service.PlatformService;
 import com.game.rmt.global.errorhandler.exception.ErrorCode;
 import com.game.rmt.global.errorhandler.exception.NotFoundException;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class GameService {
 
     private final GameRepository gameRepository;
