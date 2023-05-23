@@ -38,7 +38,7 @@ public class GameRepositoryImpl implements GameRepositoryCustom {
         return queryFactory
                 .selectFrom(game)
                 .where(equalGameId(gameId))
-                .fetchOne();
+                .fetchFirst();
     }
 
     private BooleanExpression searchGameNameBySearchFilter(GameSearchFilter gameSearchFilter) {

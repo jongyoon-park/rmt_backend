@@ -66,7 +66,7 @@ public class ProductService {
         Product product = getProduct(productId);
 
         if (product.isActivated()) {
-            throw new BadRequestException(ErrorCode.BAD_REQUEST_UPDATE_PRODUCT);
+            throw new BadRequestException(ErrorCode.BAD_REQUEST_ALREADY_UPDATE_PRODUCT);
         }
 
         return product;
@@ -76,7 +76,7 @@ public class ProductService {
         Product product = getProduct(productId);
 
         if (!product.isActivated()) {
-            throw new BadRequestException(ErrorCode.BAD_REQUEST_UPDATE_PRODUCT);
+            throw new BadRequestException(ErrorCode.BAD_REQUEST_ALREADY_UPDATE_PRODUCT);
         }
 
         return product;

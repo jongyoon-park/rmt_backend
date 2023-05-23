@@ -42,7 +42,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         return queryFactory
                 .selectFrom(product)
                 .where(equalProductId(productId))
-                .fetchOne();
+                .fetchFirst();
     }
 
     @Override
@@ -55,7 +55,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                         equalGameId(gameId),
                         equalProductName(productName)
                 )
-                .fetchOne();
+                .fetchFirst();
     }
 
     private BooleanExpression searchPlatformIdBySearchFilter(ProductSearchFilter productSearchFilter) {
