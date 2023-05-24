@@ -1,9 +1,13 @@
 package com.game.rmt.domain.account.service;
 
 import com.game.rmt.domain.account.domain.Account;
+import com.game.rmt.domain.account.dto.AccountDTO;
 import com.game.rmt.domain.account.dto.AccountResponse;
 import com.game.rmt.domain.account.dto.AccountSearchFilter;
+import com.game.rmt.domain.account.dto.NewAccountRequest;
 import com.game.rmt.domain.account.repository.AccountRepository;
+import com.game.rmt.domain.product.domain.Product;
+import com.game.rmt.domain.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,10 +22,29 @@ import java.util.List;
 public class AccountService {
     private final AccountRepository accountRepository;
 
+    private final ProductService productService;
+
     public Page<AccountResponse> getAccounts(AccountSearchFilter filter) {
         PageRequest pageable = getPageRequest(filter);
         List<Account> accountList = accountRepository.findAccountsByFilter(filter, pageable);
         return convertAccountResponsePage(convertAccountResponseList(accountList), filter, pageable);
+    }
+
+    public AccountDTO createAccount(NewAccountRequest newAccountRequest) {
+        Product product = validateCreateAccount(newAccountRequest);
+
+        Account account = new Account(
+                newAccountRequest.getPrice(),
+                newAccountRequest.getPurchaseDate(),
+                newAccountRequest.getNote(),
+                product);
+
+        return new AccountDTO(accountRepository.save(account));
+    }
+
+    private Product validateCreateAccount(NewAccountRequest newAccountRequest) {
+        newAccountRequest.isValidParam();
+        return productService.getProduct(newAccountRequest.getProductId());
     }
 
     private Page<AccountResponse> convertAccountResponsePage(List<AccountResponse> accountPage, AccountSearchFilter filter, PageRequest pageable) {
