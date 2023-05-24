@@ -3,6 +3,8 @@ package com.game.rmt.domain.account.service;
 import com.game.rmt.domain.account.domain.Account;
 import com.game.rmt.domain.account.dto.AccountResponse;
 import com.game.rmt.domain.account.dto.AccountSearchFilter;
+import com.game.rmt.domain.account.dto.NewAccountRequest;
+import com.game.rmt.domain.account.repository.AccountRepository;
 import com.game.rmt.domain.game.domain.Game;
 import com.game.rmt.domain.game.repository.GameRepository;
 import com.game.rmt.domain.platform.domain.Platform;
@@ -10,6 +12,8 @@ import com.game.rmt.domain.platform.repository.PlatformRepository;
 import com.game.rmt.domain.platform.service.PlatformService;
 import com.game.rmt.domain.product.domain.Product;
 import com.game.rmt.domain.product.repository.ProductRepository;
+import com.game.rmt.global.errorhandler.exception.ErrorCode;
+import com.game.rmt.global.errorhandler.exception.NotFoundException;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,6 +55,9 @@ class AccountServiceTest {
 
     @Autowired
     PlatformRepository platformRepository;
+
+    @Autowired
+    AccountRepository accountRepository;
 
     @Autowired
     PlatformService platformService;
@@ -191,5 +198,26 @@ class AccountServiceTest {
         Page<AccountResponse> page = PageableExecutionUtils.getPage(accountResponseList, pageable, () -> countQuery.fetch().size());
 
         assertThat(page.getTotalElements()).isEqualTo(2);
+    }
+
+    @Test
+    public void insertAccount() {
+        //신규 account 정보 받기
+        NewAccountRequest request = new NewAccountRequest((long) 5, 100000, LocalDate.now(), null);
+        //poductId 유효성 체크
+
+        Product findProduct = productRepository.findProductById(request.getProductId());
+
+        if (findProduct == null) {
+            throw new NotFoundException(ErrorCode.NOT_FOUND_PRODUCT);
+        }
+        //account entity 생성
+        Account account = new Account(request.getPrice(), request.getPurchaseDate(), findProduct);
+        //accountRepository.save 실행
+        accountRepository.save(account);
+        //실행 결과 accountResponse로 변환
+        AccountResponse response = new AccountResponse(account);
+
+        assertThat(response.getPrice()).isEqualTo(100000);
     }
 }
