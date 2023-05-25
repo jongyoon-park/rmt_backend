@@ -26,7 +26,7 @@ public class NewAccountRequest implements CreateRequest {
     }
 
     private boolean isValidPrice() {
-        return isNotNull(price) && price > 0;
+        return isNotNull(price) && price >= 0;
     }
 
     private boolean isValidPurchaseDate() {

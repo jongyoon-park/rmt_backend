@@ -220,4 +220,12 @@ class AccountServiceTest {
 
         assertThat(response.getPrice()).isEqualTo(100000);
     }
+
+    public void updateAccount() {
+        // account 수정 시 받을 정보 : purchaseDate, price, note
+        // AccountId 유효성 체크
+        // 유효한 정보가 들어온 경우 account 엔티티의 값 변경
+        // 변경한 값을 accountRepository.save로 저장
+        // 저장한 account를 accountResponse로 변환
+    }
 }

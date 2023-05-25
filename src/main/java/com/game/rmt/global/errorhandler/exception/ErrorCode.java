@@ -13,6 +13,7 @@ public enum ErrorCode {
     BAD_REQUEST_UPDATE_PRODUCT(HttpStatus.BAD_REQUEST, "Bad request for updated product"),
     BAD_REQUEST_ALREADY_UPDATE_PRODUCT(HttpStatus.BAD_REQUEST, "Bad request for already updated product"),
     BAD_REQUEST_CREATE_ACCOUNT(HttpStatus.BAD_REQUEST, "Bad request for created account"),
+    BAD_REQUEST_UPDATE_ACCOUNT(HttpStatus.BAD_REQUEST, "Bad request for updated account"),
 
     NOT_FOUND(HttpStatus.NOT_FOUND, "Not found"),
     NOT_FOUND_PLATFORM(HttpStatus.NOT_FOUND, "Not found platform"),
