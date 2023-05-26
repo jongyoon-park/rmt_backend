@@ -64,6 +64,14 @@ public class AccountRepositoryImpl implements AccountRepositoryCustom {
                 );
     }
 
+    @Override
+    public Account findAccountById(Long accountId) {
+        return queryFactory
+                .selectFrom(account)
+                .where(equalAccountId(accountId))
+                .fetchFirst();
+    }
+
     private BooleanExpression searchPlatformIdsBySearchFilter(AccountSearchFilter filter) {
         return filter.isValidSearchPlatformIdList() ? inPlatformIds(filter.getSearchPlatformIdList()) : null;
     }
@@ -102,6 +110,9 @@ public class AccountRepositoryImpl implements AccountRepositoryCustom {
 
     private BooleanExpression inPlatformIds(List<Long> platformIds) {
         return platform.id.in(platformIds);
+    }
+    private BooleanExpression equalAccountId(Long productId) {
+        return account.id.eq(productId);
     }
 
 

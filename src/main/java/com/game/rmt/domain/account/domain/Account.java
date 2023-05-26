@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -46,13 +45,49 @@ public class Account {
         this.purchaseDate = purchaseDate;
         this.createDate = LocalDateTime.now();
 
-        if (product != null) {
-            changeProduct(product);
+        if (isNull(product)) {
+            return;
         }
+
+        changeProduct(product);
+    }
+
+    public void updateAccountByRequest(Integer price, LocalDate purchaseDate, String note) {
+        changePrice(price);
+        changePurchaseDate(purchaseDate);
+        changeNote (note);
+    }
+
+    private void changePrice(Integer price) {
+        if (isNull(price) || price < 0) {
+            return;
+        }
+
+        this.price = price;
+    }
+
+    private void changeNote (String note) {
+        if (isNull(note)) {
+            return;
+        }
+
+        this.note = note;
+    }
+
+    private void changePurchaseDate(LocalDate purchaseDate) {
+        if (isNull(purchaseDate)) {
+            return;
+        }
+
+        this.purchaseDate = purchaseDate;
     }
 
     private void changeProduct(Product product) {
         this.product = product;
         product.getAccounts().add(this);
+    }
+
+    private boolean isNull(Object object) {
+        return object == null;
     }
 }

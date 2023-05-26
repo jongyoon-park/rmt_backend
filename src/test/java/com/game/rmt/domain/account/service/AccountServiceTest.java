@@ -1,9 +1,8 @@
 package com.game.rmt.domain.account.service;
 
 import com.game.rmt.domain.account.domain.Account;
-import com.game.rmt.domain.account.dto.AccountResponse;
-import com.game.rmt.domain.account.dto.AccountSearchFilter;
-import com.game.rmt.domain.account.dto.NewAccountRequest;
+import com.game.rmt.domain.account.domain.QAccount;
+import com.game.rmt.domain.account.dto.*;
 import com.game.rmt.domain.account.repository.AccountRepository;
 import com.game.rmt.domain.game.domain.Game;
 import com.game.rmt.domain.game.repository.GameRepository;
@@ -221,11 +220,30 @@ class AccountServiceTest {
         assertThat(response.getPrice()).isEqualTo(100000);
     }
 
+    @Test
     public void updateAccount() {
         // account 수정 시 받을 정보 : purchaseDate, price, note
+        UpdateAccountRequest request = new UpdateAccountRequest((long) 8, 0, LocalDate.parse("2023-05-22"), "add note");
+        request.isValidParam();
         // AccountId 유효성 체크
-        // 유효한 정보가 들어온 경우 account 엔티티의 값 변경
+        Account findAccount = queryFactory
+                .selectFrom(account)
+                .where(account.id.eq(request.getAccountId()))
+                .fetchFirst();
+
+        if (findAccount == null) {
+            throw new NotFoundException(ErrorCode.NOT_FOUND_ACCOUNT);
+        }
+
+        // 유효한 정보가 들어온 경우 account 엔티티의 값 변경 -> 이 변경하는 코드가 entity에 들어갈 경우, entity는 UpdateAccountRequest에 의존하게 됨
+        findAccount.updateAccountByRequest(request.getPrice(), request.getPurchaseDate(), request.getNote());
         // 변경한 값을 accountRepository.save로 저장
+        AccountDTO save = new AccountDTO(accountRepository.save(findAccount));
+
+        em.flush();
+        em.clear();
         // 저장한 account를 accountResponse로 변환
+        Account accountById = accountRepository.findAccountById(request.getAccountId());
+        assertThat(accountById.getProduct()).isNotNull();
     }
 }

@@ -10,4 +10,5 @@ import java.util.List;
 public interface AccountRepositoryCustom {
     List<Account> findAccountsByFilter(AccountSearchFilter filter, Pageable pageable);
     JPAQuery<Account> findAccountsByFilterQuery(AccountSearchFilter filter);
+    Account findAccountById(Long accountId);
 }
