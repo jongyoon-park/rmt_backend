@@ -19,6 +19,7 @@ public enum ErrorCode {
     NOT_FOUND_PLATFORM(HttpStatus.NOT_FOUND, "Not found platform"),
     NOT_FOUND_GAME(HttpStatus.NOT_FOUND, "Not found game"),
     NOT_FOUND_PRODUCT(HttpStatus.NOT_FOUND, "Not found product"),
+    NOT_FOUND_ACCOUNT(HttpStatus.NOT_FOUND, "Not found account"),
 
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "Not allowed method"),
 

@@ -1,9 +1,6 @@
 package com.game.rmt.domain.account.controller;
 
-import com.game.rmt.domain.account.dto.AccountListResponse;
-import com.game.rmt.domain.account.dto.AccountResponse;
-import com.game.rmt.domain.account.dto.AccountSearchFilter;
-import com.game.rmt.domain.account.dto.NewAccountRequest;
+import com.game.rmt.domain.account.dto.*;
 import com.game.rmt.domain.account.service.AccountService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -23,5 +20,10 @@ public class AccountController {
     @PostMapping("")
     public AccountResponse createAccount(@RequestBody NewAccountRequest accountRequest) {
         return new AccountResponse(accountService.createAccount(accountRequest));
+    }
+
+    @PatchMapping("")
+    public void updateAccount(UpdateAccountRequest request) {
+        accountService.updateAccount(request);
     }
 }
