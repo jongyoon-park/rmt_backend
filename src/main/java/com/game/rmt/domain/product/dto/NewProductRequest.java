@@ -1,11 +1,12 @@
 package com.game.rmt.domain.product.dto;
 
 import com.game.rmt.global.errorhandler.exception.BadRequestException;
-import com.game.rmt.global.errorhandler.exception.ErrorCode;
 import com.game.rmt.global.parent.CreateRequest;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import static com.game.rmt.global.errorhandler.exception.ErrorCode.BAD_REQUEST_CREATE_PRODUCT;
 
 @Getter
 @AllArgsConstructor
@@ -21,7 +22,7 @@ public class NewProductRequest implements CreateRequest {
             return;
         }
 
-        throw new BadRequestException(ErrorCode.BAD_REQUEST_CREATE_PRODUCT);
+        throw new BadRequestException(BAD_REQUEST_CREATE_PRODUCT);
     }
 
     private boolean isValidProductName() {

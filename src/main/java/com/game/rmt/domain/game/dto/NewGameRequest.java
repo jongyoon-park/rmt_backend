@@ -1,11 +1,12 @@
 package com.game.rmt.domain.game.dto;
 
 import com.game.rmt.global.errorhandler.exception.BadRequestException;
-import com.game.rmt.global.errorhandler.exception.ErrorCode;
 import com.game.rmt.global.parent.CreateRequest;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import static com.game.rmt.global.errorhandler.exception.ErrorCode.BAD_REQUEST_CREATE_GAME;
 
 @Getter
 @AllArgsConstructor
@@ -20,7 +21,7 @@ public class NewGameRequest implements CreateRequest {
             return;
         }
 
-        throw new BadRequestException(ErrorCode.BAD_REQUEST_CREATE_GAME);
+        throw new BadRequestException(BAD_REQUEST_CREATE_GAME);
     }
 
     private boolean isValidGameName() {

@@ -1,13 +1,14 @@
 package com.game.rmt.domain.account.dto;
 
 import com.game.rmt.global.errorhandler.exception.BadRequestException;
-import com.game.rmt.global.errorhandler.exception.ErrorCode;
 import com.game.rmt.global.parent.CreateRequest;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+
+import static com.game.rmt.global.errorhandler.exception.ErrorCode.BAD_REQUEST_UPDATE_ACCOUNT;
 
 @Getter
 @AllArgsConstructor
@@ -25,7 +26,7 @@ public class UpdateAccountRequest implements CreateRequest {
             return;
         }
 
-        throw new BadRequestException(ErrorCode.BAD_REQUEST_UPDATE_ACCOUNT);
+        throw new BadRequestException(BAD_REQUEST_UPDATE_ACCOUNT);
     }
 
     public boolean isValidPrice() {
