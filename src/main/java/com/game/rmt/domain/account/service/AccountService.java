@@ -5,7 +5,6 @@ import com.game.rmt.domain.account.dto.*;
 import com.game.rmt.domain.account.repository.AccountRepository;
 import com.game.rmt.domain.product.domain.Product;
 import com.game.rmt.domain.product.service.ProductService;
-import com.game.rmt.global.errorhandler.exception.ErrorCode;
 import com.game.rmt.global.errorhandler.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -15,6 +14,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.game.rmt.global.errorhandler.exception.ErrorCode.NOT_FOUND_ACCOUNT;
 
 @Service
 @RequiredArgsConstructor
@@ -50,7 +51,7 @@ public class AccountService {
         Account account = accountRepository.findAccountById(accountId);
 
         if (account == null) {
-            throw new NotFoundException(ErrorCode.NOT_FOUND_ACCOUNT);
+            throw new NotFoundException(NOT_FOUND_ACCOUNT);
         }
 
         return account;

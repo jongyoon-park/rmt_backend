@@ -7,13 +7,14 @@ import com.game.rmt.domain.game.dto.NewGameRequest;
 import com.game.rmt.domain.game.repository.GameRepository;
 import com.game.rmt.domain.platform.domain.Platform;
 import com.game.rmt.domain.platform.service.PlatformService;
-import com.game.rmt.global.errorhandler.exception.ErrorCode;
 import com.game.rmt.global.errorhandler.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.game.rmt.global.errorhandler.exception.ErrorCode.NOT_FOUND_GAME;
 
 @Service
 @RequiredArgsConstructor
@@ -44,7 +45,7 @@ public class GameService {
         Game game = gameRepository.findGameById(id);
 
         if (game == null) {
-            throw new NotFoundException(ErrorCode.NOT_FOUND_GAME);
+            throw new NotFoundException(NOT_FOUND_GAME);
         }
 
         return game;

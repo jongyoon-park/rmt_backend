@@ -3,13 +3,14 @@ package com.game.rmt.domain.platform.service;
 import com.game.rmt.domain.platform.domain.Platform;
 import com.game.rmt.domain.platform.dto.PlatformDTO;
 import com.game.rmt.domain.platform.repository.PlatformRepository;
-import com.game.rmt.global.errorhandler.exception.ErrorCode;
 import com.game.rmt.global.errorhandler.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.game.rmt.global.errorhandler.exception.ErrorCode.NOT_FOUND_PLATFORM;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +32,7 @@ public class PlatformService {
         Platform platform = platformRepository.findPlatformById(id);
 
         if (platform == null) {
-            throw new NotFoundException(ErrorCode.NOT_FOUND_PLATFORM);
+            throw new NotFoundException(NOT_FOUND_PLATFORM);
         }
 
         return platform;
