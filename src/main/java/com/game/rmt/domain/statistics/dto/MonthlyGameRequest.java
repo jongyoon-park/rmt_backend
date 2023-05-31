@@ -46,6 +46,22 @@ public class MonthlyGameRequest implements CreateRequest {
         return !isNotNull(startDate) && isNotNull(endDate);
     }
 
+    public RangeDate getRangeDateValue() {
+        if (isValidRangeDate()) {
+            return RangeDate.RANGE_DATE;
+        }
+
+        if (isOnlyStartDate()) {
+            return RangeDate.ONLY_START_DATE;
+        }
+
+        if (isOnlyEndDate()) {
+            return RangeDate.ONLY_END_DATE;
+        }
+
+        return RangeDate.NONE;
+    }
+
     private boolean isValidDate() {
         return isNotNullRangeDate() ? isBeforeDate() : true;
     }
