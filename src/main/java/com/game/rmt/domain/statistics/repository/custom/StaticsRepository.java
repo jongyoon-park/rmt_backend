@@ -7,6 +7,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.StringTemplate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
@@ -16,15 +17,17 @@ import static com.game.rmt.domain.account.domain.QAccount.account;
 import static com.game.rmt.domain.game.domain.QGame.game;
 import static com.game.rmt.domain.product.domain.QProduct.product;
 
-public class StaticsRepositoryImpl implements StaticsRepositoryCustom {
+@Repository
+public class StaticsRepository {
+    private final EntityManager em;
     private final JPAQueryFactory queryFactory;
 
-    public StaticsRepositoryImpl(EntityManager em) {
+    public StaticsRepository(EntityManager em) {
+        this.em = em;
         this.queryFactory = new JPAQueryFactory(em);
     }
 
-    @Override
-    public List<MonthlyStaticsDTO> getMonthlyStaticsByGameId(long gameId) {
+    public List<MonthlyStaticsDTO> findMonthlyStaticsByGameId(long gameId) {
         StringTemplate monthFormat = convertMonthTemplateByPurchaseDate();
 
         return queryFactory
@@ -41,8 +44,7 @@ public class StaticsRepositoryImpl implements StaticsRepositoryCustom {
                 .fetch();
     }
 
-    @Override
-    public List<MonthlyStaticsDTO> getMonthlyStaticsByGameIdAndStartDate(long gameId, LocalDate startDate) {
+    public List<MonthlyStaticsDTO> findMonthlyStaticsByGameIdAndStartDate(long gameId, LocalDate startDate) {
         StringTemplate monthFormat = convertMonthTemplateByPurchaseDate();
 
         return queryFactory
@@ -59,8 +61,7 @@ public class StaticsRepositoryImpl implements StaticsRepositoryCustom {
                 .fetch();
     }
 
-    @Override
-    public List<MonthlyStaticsDTO> getMonthlyStaticsByGameIdAndEndDate(long gameId, LocalDate endDate) {
+    public List<MonthlyStaticsDTO> findMonthlyStaticsByGameIdAndEndDate(long gameId, LocalDate endDate) {
         StringTemplate monthFormat = convertMonthTemplateByPurchaseDate();
 
         return queryFactory
@@ -77,8 +78,7 @@ public class StaticsRepositoryImpl implements StaticsRepositoryCustom {
                 .fetch();
     }
 
-    @Override
-    public List<MonthlyStaticsDTO> getMonthlyStaticsByGameIdBetweenDate(long gameId, LocalDate startDate, LocalDate endDate) {
+    public List<MonthlyStaticsDTO> findMonthlyStaticsByGameIdBetweenDate(long gameId, LocalDate startDate, LocalDate endDate) {
         StringTemplate monthFormat = convertMonthTemplateByPurchaseDate();
 
         return queryFactory

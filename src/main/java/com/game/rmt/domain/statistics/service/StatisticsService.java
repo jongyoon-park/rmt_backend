@@ -1,21 +1,22 @@
 package com.game.rmt.domain.statistics.service;
 
-import com.game.rmt.domain.account.repository.AccountRepository;
 import com.game.rmt.domain.game.domain.Game;
 import com.game.rmt.domain.game.service.GameService;
 import com.game.rmt.domain.statistics.dto.MonthlyEachGameResponse;
 import com.game.rmt.domain.statistics.dto.MonthlyGameRequest;
 import com.game.rmt.domain.statistics.dto.MonthlyStaticsDTO;
+import com.game.rmt.domain.statistics.repository.custom.StaticsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+
 @Service
 @RequiredArgsConstructor
 public class StatisticsService {
 
-    private final AccountRepository accountRepository;
+    private final StaticsRepository staticsRepository;
 
     private final GameService gameService;
 
@@ -32,7 +33,7 @@ public class StatisticsService {
     }
 
     private List<MonthlyStaticsDTO> getMonthlyStaticsByGameIdBetweenDate(MonthlyGameRequest request) {
-        return accountRepository.getMonthlyStaticsByGameIdBetweenDate(
+        return staticsRepository.findMonthlyStaticsByGameIdBetweenDate(
                 request.getGameId(),
                 request.getStartDate(),
                 request.getEndDate()
@@ -40,32 +41,29 @@ public class StatisticsService {
     }
 
     private List<MonthlyStaticsDTO> getMonthlyStaticsByGameIdAndStartDate(MonthlyGameRequest request) {
-        return accountRepository.getMonthlyStaticsByGameIdAndStartDate(
+        return staticsRepository.findMonthlyStaticsByGameIdAndStartDate(
                 request.getGameId(),
                 request.getStartDate()
         );
     }
 
     private List<MonthlyStaticsDTO> getMonthlyStaticsByGameIdAndEndDate(MonthlyGameRequest request) {
-        return accountRepository.getMonthlyStaticsByGameIdAndEndDate(
+        return staticsRepository.findMonthlyStaticsByGameIdAndEndDate(
                 request.getGameId(),
                 request.getEndDate()
         );
     }
 
     private List<MonthlyStaticsDTO> getMonthlyGameStaticsByCondition(MonthlyGameRequest request) {
-        if (request.isValidRangeDate()) {
-            return getMonthlyStaticsByGameIdBetweenDate(request);
+        switch (request.getRangeDateValue()) {
+            case RANGE_DATE :
+                return getMonthlyStaticsByGameIdBetweenDate(request);
+            case ONLY_START_DATE:
+                return getMonthlyStaticsByGameIdAndStartDate(request);
+            case ONLY_END_DATE:
+                return getMonthlyStaticsByGameIdAndEndDate(request);
+            default:
+                return staticsRepository.findMonthlyStaticsByGameId(request.getGameId());
         }
-
-        if (request.isOnlyStartDate()) {
-            return getMonthlyStaticsByGameIdAndStartDate(request);
-        }
-
-        if (request.isOnlyEndDate()) {
-            return getMonthlyStaticsByGameIdAndEndDate(request);
-        }
-
-        return accountRepository.getMonthlyStaticsByGameId(request.getGameId());
     }
 }

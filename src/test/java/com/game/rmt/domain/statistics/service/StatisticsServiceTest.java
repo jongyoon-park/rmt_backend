@@ -187,7 +187,6 @@ class StatisticsServiceTest {
                 .orderBy(formattedDate.asc())
                 .fetch();
 
-        System.out.println("!!!!!! test");
         // 2. startDate만 값이 있을 경우
         /*SELECT DATE_FORMAT(purchase_date, '%Y-%m'), SUM(price)
         FROM account a
@@ -247,4 +246,16 @@ class StatisticsServiceTest {
         // 통계 데이터를 MonthlyEachGameResponse로 변환
         MonthlyEachGameResponse response = new MonthlyEachGameResponse(findGame.getName(), fetch1);
     }
+
+    @Test
+    public void getMonthlyEachPlatformStatics() {
+        // 통계 기반 정보 받아오기 : platformId, startDate, endDate
+
+        // 통계 기반 정보 유효성 체크
+        // 통계 데이터 가져오기
+        // platform까지 같이 join 해야 함
+        // 통계 데이터 변환 작업
+
+    }
+
 }
