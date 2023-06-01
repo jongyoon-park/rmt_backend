@@ -15,6 +15,7 @@ import java.util.List;
 
 import static com.game.rmt.domain.account.domain.QAccount.account;
 import static com.game.rmt.domain.game.domain.QGame.game;
+import static com.game.rmt.domain.platform.domain.QPlatform.platform;
 import static com.game.rmt.domain.product.domain.QProduct.product;
 
 @Repository
@@ -94,6 +95,77 @@ public class StaticsRepository {
                 .orderBy(monthFormat.asc())
                 .fetch();
     }
+    public List<MonthlyStaticsDTO> findMonthlyStaticsByPlatformId(long platformId) {
+        StringTemplate monthFormat = convertMonthTemplateByPurchaseDate();
+
+        return queryFactory
+                .select(new QMonthlyStaticsDTO(monthFormat, account.price.sum()))
+                .from(account)
+                .join(account.product, product)
+                .join(product.game, game)
+                .join(game.platform, platform)
+                .where(
+                        minusYearByByPurchaseDateFromEndDate(LocalDate.now()),
+                        eqPlatformId(platformId)
+                )
+                .groupBy(monthFormat)
+                .orderBy(monthFormat.asc())
+                .fetch();
+    }
+
+    public List<MonthlyStaticsDTO> findMonthlyStaticsByPlatformIdAndStartDate(long platformId, LocalDate startDate) {
+        StringTemplate monthFormat = convertMonthTemplateByPurchaseDate();
+
+        return queryFactory
+                .select(new QMonthlyStaticsDTO(monthFormat, account.price.sum()))
+                .from(account)
+                .join(account.product, product)
+                .join(product.game, game)
+                .join(game.platform, platform)
+                .where(
+                        plusYearByPurchaseDateFromStartDate(startDate),
+                        eqPlatformId(platformId)
+                )
+                .groupBy(monthFormat)
+                .orderBy(monthFormat.asc())
+                .fetch();
+    }
+
+    public List<MonthlyStaticsDTO> findMonthlyStaticsByPlatformIdAndEndDate(long platformId, LocalDate endDate) {
+        StringTemplate monthFormat = convertMonthTemplateByPurchaseDate();
+
+        return queryFactory
+                .select(new QMonthlyStaticsDTO(monthFormat, account.price.sum()))
+                .from(account)
+                .join(account.product, product)
+                .join(product.game, game)
+                .join(game.platform, platform)
+                .where(
+                        minusYearByByPurchaseDateFromEndDate(endDate),
+                        eqPlatformId(platformId)
+                )
+                .groupBy(monthFormat)
+                .orderBy(monthFormat.asc())
+                .fetch();
+    }
+
+    public List<MonthlyStaticsDTO> findMonthlyStaticsByPlatformIdBetweenDate(long platformId, LocalDate startDate, LocalDate endDate) {
+        StringTemplate monthFormat = convertMonthTemplateByPurchaseDate();
+
+        return queryFactory
+                .select(new QMonthlyStaticsDTO(monthFormat, account.price.sum()))
+                .from(account)
+                .join(account.product, product)
+                .join(product.game, game)
+                .join(game.platform, platform)
+                .where(
+                        betweenPurchaseDate(startDate, endDate),
+                        eqPlatformId(platformId)
+                )
+                .groupBy(monthFormat)
+                .orderBy(monthFormat.asc())
+                .fetch();
+    }
 
     private BooleanExpression minusYearByByPurchaseDateFromEndDate(LocalDate endDate) {
         return betweenPurchaseDate(endDate.minusYears(1), endDate);
@@ -109,6 +181,10 @@ public class StaticsRepository {
 
     private BooleanExpression eqGameId(long gameId) {
         return account.product.game.id.eq(gameId);
+    }
+
+    private BooleanExpression eqPlatformId(long platformId) {
+        return platform.id.eq(platformId);
     }
 
     private StringTemplate convertMonthTemplateByPurchaseDate() {
