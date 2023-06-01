@@ -55,7 +55,7 @@ public class StatisticsService {
     }
 
     private List<MonthlyStaticsDTO> getMonthlyGameStaticsByCondition(MonthlyGameRequest request) {
-        switch (request.getRangeDateValue()) {
+        switch (request.getRangeDateCondition()) {
             case RANGE_DATE :
                 return getMonthlyStaticsByGameIdBetweenDate(request);
             case ONLY_START_DATE:
