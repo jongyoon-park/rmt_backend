@@ -9,16 +9,14 @@ import com.game.rmt.domain.platform.repository.PlatformRepository;
 import com.game.rmt.domain.platform.service.PlatformService;
 import com.game.rmt.domain.product.domain.Product;
 import com.game.rmt.domain.product.repository.ProductRepository;
-import com.game.rmt.domain.statistics.dto.MonthlyEachGameResponse;
-import com.game.rmt.domain.statistics.dto.MonthlyGameRequest;
-import com.game.rmt.domain.statistics.dto.MonthlyStaticsDTO;
-import com.game.rmt.domain.statistics.dto.QMonthlyStaticsDTO;
+import com.game.rmt.domain.statistics.dto.*;
 import com.game.rmt.global.errorhandler.exception.ErrorCode;
 import com.game.rmt.global.errorhandler.exception.NotFoundException;
 import com.querydsl.core.types.ConstantImpl;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.StringTemplate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -250,12 +248,108 @@ class StatisticsServiceTest {
     @Test
     public void getMonthlyEachPlatformStatics() {
         // 통계 기반 정보 받아오기 : platformId, startDate, endDate
-
+        MonthlyPlatformRequest request = new MonthlyPlatformRequest((long) 1, LocalDate.parse("2022-06-01"), LocalDate.parse("2022-06-30"));
         // 통계 기반 정보 유효성 체크
+        request.isValidParam();
+        Platform findPlatform = queryFactory
+                .select(platform)
+                .from(platform)
+                .where(platform.id.eq(request.getPlatformId()))
+                .fetchFirst();
+
+        if (findPlatform == null) {
+            throw new NotFoundException(ErrorCode.NOT_FOUND_PLATFORM);
+        }
+
+        em.flush();
+        em.clear();
+
         // 통계 데이터 가져오기
         // platform까지 같이 join 해야 함
-        // 통계 데이터 변환 작업
 
+        LocalDate now = LocalDate.now();
+        StringTemplate formattedDate = Expressions.stringTemplate(
+                "DATE_FORMAT({0}, {1})",
+                account.purchaseDate,
+                ConstantImpl.create("%Y-%m"));
+
+        RangeDate rangeDateCondition = request.getRangeDateCondition();
+
+        if (rangeDateCondition.equals(RangeDate.RANGE_DATE)) {
+            List<MonthlyStaticsDTO> fetch4 = queryFactory
+                    .select(new QMonthlyStaticsDTO(formattedDate, account.price.sum()))
+                    .from(account)
+                    .join(account.product, product)
+                    .join(product.game, game)
+                    .join(game.platform, platform)
+                    .where(
+                            account.purchaseDate.between(request.getStartDate(), request.getEndDate()),
+                            platform.id.eq(request.getPlatformId())
+                    )
+                    .groupBy(formattedDate)
+                    .orderBy(formattedDate.asc())
+                    .fetch();
+        }
+
+        List<MonthlyStaticsDTO> fetch1 = queryFactory
+                .select(new QMonthlyStaticsDTO(formattedDate, account.price.sum()))
+                .from(account)
+                .join(account.product, product)
+                .join(product.game, game)
+                .join(game.platform, platform)
+                .where(
+                        account.purchaseDate.between(now.minusYears(1), now),
+                        platform.id.eq(request.getPlatformId())
+                )
+                .groupBy(formattedDate)
+                .orderBy(formattedDate.asc())
+                .fetch();
+
+        List<MonthlyStaticsDTO> fetch2 = queryFactory
+                .select(new QMonthlyStaticsDTO(formattedDate, account.price.sum()))
+                .from(account)
+                .join(account.product, product)
+                .join(product.game, game)
+                .join(game.platform, platform)
+                .where(
+                        account.purchaseDate.between(request.getStartDate(), request.getStartDate().plusYears(1)),
+                        platform.id.eq(request.getPlatformId())
+                )
+                .groupBy(formattedDate)
+                .orderBy(formattedDate.asc())
+                .fetch();
+
+        List<MonthlyStaticsDTO> fetch3 = queryFactory
+                .select(new QMonthlyStaticsDTO(formattedDate, account.price.sum()))
+                .from(account)
+                .join(account.product, product)
+                .join(product.game, game)
+                .join(game.platform, platform)
+                .where(
+                        account.purchaseDate.between(request.getEndDate().minusYears(1), request.getEndDate()),
+                        platform.id.eq(request.getPlatformId())
+                )
+                .groupBy(formattedDate)
+                .orderBy(formattedDate.asc())
+                .fetch();
+
+        List<MonthlyStaticsDTO> fetch4 = queryFactory
+                .select(new QMonthlyStaticsDTO(formattedDate, account.price.sum()))
+                .from(account)
+                .join(account.product, product)
+                .join(product.game, game)
+                .join(game.platform, platform)
+                .where(
+                        account.purchaseDate.between(request.getStartDate(), request.getEndDate()),
+                        platform.id.eq(request.getPlatformId())
+                )
+                .groupBy(formattedDate)
+                .orderBy(formattedDate.asc())
+                .fetch();
+
+        // 통계 데이터 변환 작업
+        MonthlyEachPlatformResponse response = new MonthlyEachPlatformResponse(findPlatform.getName(), fetch1);
+        Assertions.assertThat(fetch1.size()).isEqualTo(1);
     }
 
 }
