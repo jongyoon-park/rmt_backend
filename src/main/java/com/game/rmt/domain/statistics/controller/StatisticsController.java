@@ -2,6 +2,7 @@ package com.game.rmt.domain.statistics.controller;
 
 import com.game.rmt.domain.statistics.dto.MonthlyEachGameResponse;
 import com.game.rmt.domain.statistics.dto.MonthlyGameRequest;
+import com.game.rmt.domain.statistics.dto.MonthlyPlatformRequest;
 import com.game.rmt.domain.statistics.service.StatisticsService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,5 +20,10 @@ public class StatisticsController {
     @GetMapping("/monthly/game")
     public MonthlyEachGameResponse getMonthlyGameStatics(@RequestBody MonthlyGameRequest request) {
         return statisticsService.getMonthlyGameStatics(request);
+    }
+
+    @GetMapping("/monthly/platform")
+    public MonthlyEachGameResponse getMonthlyPlatformStatics(@RequestBody MonthlyPlatformRequest request) {
+        return statisticsService.getMonthlyPlatformStatics(request);
     }
 }
