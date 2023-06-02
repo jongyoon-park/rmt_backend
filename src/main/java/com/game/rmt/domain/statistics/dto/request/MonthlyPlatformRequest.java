@@ -29,18 +29,6 @@ public class MonthlyPlatformRequest implements CreateRequest {
         throw new BadRequestException(BAD_REQUEST_GET_STATISTICS);
     }
 
-    public boolean isValidRangeDate() {
-        return isNotNullRangeDate() && isBeforeDate();
-    }
-
-    public boolean isOnlyStartDate() {
-        return isNotNull(startDate) && !isNotNull(endDate);
-    }
-
-    public boolean isOnlyEndDate() {
-        return !isNotNull(startDate) && isNotNull(endDate);
-    }
-
     public RangeDate getRangeDateCondition() {
         if (isValidRangeDate()) {
             return RangeDate.RANGE_DATE;
@@ -67,5 +55,17 @@ public class MonthlyPlatformRequest implements CreateRequest {
 
     private boolean isBeforeDate() {
         return startDate.isBefore(endDate);
+    }
+
+    private boolean isValidRangeDate() {
+        return isNotNullRangeDate() && isBeforeDate();
+    }
+
+    private boolean isOnlyStartDate() {
+        return isNotNull(startDate) && !isNotNull(endDate);
+    }
+
+    private boolean isOnlyEndDate() {
+        return !isNotNull(startDate) && isNotNull(endDate);
     }
 }

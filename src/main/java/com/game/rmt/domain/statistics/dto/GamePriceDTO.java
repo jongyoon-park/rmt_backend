@@ -6,12 +6,12 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class GameTotalPriceDTO {
+public class GamePriceDTO {
     private String gameName;
     private Integer price;
 
     @QueryProjection
-    public GameTotalPriceDTO(String gameName, Integer price) {
+    public GamePriceDTO(String gameName, Integer price) {
         this.gameName = gameName;
         this.price = price;
     }
