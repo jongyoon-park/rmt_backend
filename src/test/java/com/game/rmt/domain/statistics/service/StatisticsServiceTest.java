@@ -10,8 +10,10 @@ import com.game.rmt.domain.platform.service.PlatformService;
 import com.game.rmt.domain.product.domain.Product;
 import com.game.rmt.domain.product.repository.ProductRepository;
 import com.game.rmt.domain.statistics.dto.*;
+import com.game.rmt.domain.statistics.dto.request.EachGameRatioRequest;
 import com.game.rmt.domain.statistics.dto.request.MonthlyGameRequest;
 import com.game.rmt.domain.statistics.dto.request.MonthlyPlatformRequest;
+import com.game.rmt.domain.statistics.dto.response.GameRatioDTO;
 import com.game.rmt.domain.statistics.dto.response.MonthlyEachGameResponse;
 import com.game.rmt.domain.statistics.dto.response.MonthlyEachPlatformResponse;
 import com.game.rmt.global.errorhandler.exception.ErrorCode;
@@ -30,6 +32,8 @@ import org.springframework.test.annotation.Commit;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.game.rmt.domain.account.domain.QAccount.account;
@@ -366,11 +370,89 @@ class StatisticsServiceTest {
         Assertions.assertThat(fetch1.size()).isEqualTo(1);
     }
 
+    @Test
     public void getRatioEachGame() {
         // 통계 기반 정보 받아오기 : platformIds, startDate, endDate
-        // platformIds의 length가 0일 경우(또는 null) 전체 플랫폼으로 조회
+        List<Long> platformIds = Arrays.asList((long) 1, (long) 2);
+        EachGameRatioRequest request = new EachGameRatioRequest(platformIds, null, null);
+        // 통계 기반 정보 유효성 체크
+        request.isValidParam();
+        // platformIds의 length가 0일 경우(또는 null) 전체 플랫폼으로 조회 -> 이 때, platform 테이블은 조인하지 않음
+        // platformIds가 없으면서 전체 기간이 없을 경우
+        /*select g.name, sum(account.price)
+        from account
+        right join product p on p.id = account.product_id
+        right join game g on g.id = p.game_id
+        group by game_id;
+        */
+        List<GameTotalPriceDTO> fetch = queryFactory
+                .select(new QGameTotalPriceDTO(game.name, account.price.sum()))
+                .from(account)
+                .join(account.product, product)
+                .join(product.game, game)
+                .groupBy(game.name)
+                .fetch();
+
+        List<GameTotalPriceDTO> fetch1 = queryFactory
+                .select(new QGameTotalPriceDTO(game.name, account.price.sum()))
+                .from(account)
+                .join(account.product, product)
+                .join(product.game, game)
+                .join(game.platform, platform)
+                .where(platform.id.in(request.getPlatformIds()))
+                .groupBy(game.name)
+                .fetch();
+
         // startDate, endDate가 없을 경우 전체 기간으로 조회
+        /*List<GameTotalPriceDTO> fetch2 = queryFactory
+                .select(new QGameTotalPriceDTO(game.name, account.price.sum()))
+                .from(account)
+                .join(account.product, product)
+                .join(product.game, game)
+                .where(
+                        account.purchaseDate.between(request.getStartDate(), request.getEndDate())
+                )
+                .groupBy(game.name)
+                .fetch();*/
+        // startDate, endDate 둘 중 하나만 있다면 해당 일 기준 1년 데이터 조회
+        /*List<GameTotalPriceDTO> fetch3 = queryFactory
+                .select(new QGameTotalPriceDTO(game.name, account.price.sum()))
+                .from(account)
+                .join(account.product, product)
+                .join(product.game, game)
+                .where(
+                        account.purchaseDate.between(request.getStartDate(), request.getStartDate().plusYears(1))
+                )
+                .groupBy(game.name)
+                .fetch();*/
+
+        /*List<GameTotalPriceDTO> fetch3 = queryFactory
+                .select(new QGameTotalPriceDTO(game.name, account.price.sum()))
+                .from(account)
+                .join(account.product, product)
+                .join(product.game, game)
+                .where(
+                        account.purchaseDate.between(request.getEndDate.minusYears(1), request.getEndDate())
+                )
+                .groupBy(game.name)
+                .fetch();*/
         // 데이터를 담을 DTO : RatioEachGameResponse
+        double totalPrice = totalPrice(fetch);
+
+        // 통계 비율 구하기
+        List<GameRatioDTO> ratioEachGameDTOList = new ArrayList<>();
+
+        List<Double> percentageList = new ArrayList<>();
+        fetch.forEach(gameTotalPriceDTO -> {
+            ratioEachGameDTOList.add(new GameRatioDTO(gameTotalPriceDTO.getGameName(), totalPrice, gameTotalPriceDTO.getPrice()));
+//            percentageList.add(Math.round((double) gameTotalPriceDTO.getPrice() / totalPrice * 100.0 * 100.0) / 100.0);
+        });
+//        Assertions.assertThat(percentageList.size()).isEqualTo(2);
+        Assertions.assertThat(ratioEachGameDTOList.get(1).getPercentage()).isEqualTo(97.54);
+    }
+
+    private double totalPrice(List<GameTotalPriceDTO> priceDTOList) {
+        return priceDTOList.stream().mapToInt(GameTotalPriceDTO::getPrice).sum();
     }
 
 }

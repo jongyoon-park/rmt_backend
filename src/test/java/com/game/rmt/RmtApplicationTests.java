@@ -50,12 +50,12 @@ class RmtApplicationTests {
 		Platform pc = queryFactory
 				.selectFrom(platform)
 				.where(platform.name.eq("PC"))
-				.fetchOne();
+				.fetchFirst();
 
 		Platform phone = queryFactory
 				.selectFrom(platform)
 				.where(platform.name.eq("Phone"))
-				.fetchOne();
+				.fetchFirst();
 
 		Game lol = new Game("LOL", pc);
 		Game umamusume = new Game("Umamusume", phone);
