@@ -106,10 +106,6 @@ public class StatisticsService {
         };
     }
 
-    private List<MonthlyStaticsDTO> getMonthlyStaticsByPlatformId(MonthlyPlatformRequest request) {
-        return staticsRepository.findMonthlyStaticsByPlatformId(request.getPlatformId());
-    }
-
     private List<MonthlyStaticsDTO> getMonthlyStaticsByPlatformIdBetweenDate(MonthlyPlatformRequest request) {
         return staticsRepository.findMonthlyStaticsByPlatformIdBetweenDate(
                 request.getPlatformId(),
