@@ -1,5 +1,6 @@
-package com.game.rmt.domain.product.dto;
+package com.game.rmt.domain.product.dto.response;
 
+import com.game.rmt.domain.product.dto.ProductDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

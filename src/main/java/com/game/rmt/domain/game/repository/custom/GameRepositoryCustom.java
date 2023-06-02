@@ -1,7 +1,7 @@
 package com.game.rmt.domain.game.repository.custom;
 
 import com.game.rmt.domain.game.domain.Game;
-import com.game.rmt.domain.game.dto.GameSearchFilter;
+import com.game.rmt.domain.game.dto.request.GameSearchFilter;
 
 import java.util.List;
 
