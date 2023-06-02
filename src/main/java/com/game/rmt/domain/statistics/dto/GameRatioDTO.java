@@ -1,4 +1,4 @@
-package com.game.rmt.domain.statistics.dto.response;
+package com.game.rmt.domain.statistics.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

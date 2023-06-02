@@ -38,6 +38,16 @@ public class PlatformService {
         return platform;
     }
 
+    public List<Platform> getPlatforms(List<Long> ids) {
+        List<Platform> platformList = platformRepository.findPlatformByIds(ids);
+
+        if (platformList.isEmpty()) {
+            throw new NotFoundException(NOT_FOUND_PLATFORM);
+        }
+
+        return platformList;
+    }
+
     private List<PlatformDTO> convertPlatformDTOList(List<Platform> platformList) {
         List<PlatformDTO> platformDTOList = new ArrayList<>();
 

@@ -1,5 +1,7 @@
 package com.game.rmt.domain.statistics.controller;
 
+import com.game.rmt.domain.statistics.dto.request.GameRatioEachPlatformRequest;
+import com.game.rmt.domain.statistics.dto.response.GameRatioEachPlatformResponse;
 import com.game.rmt.domain.statistics.dto.response.MonthlyEachGameResponse;
 import com.game.rmt.domain.statistics.dto.request.MonthlyGameRequest;
 import com.game.rmt.domain.statistics.dto.request.MonthlyPlatformRequest;
@@ -25,5 +27,10 @@ public class StatisticsController {
     @GetMapping("/monthly/platform")
     public MonthlyEachGameResponse getMonthlyPlatformStatics(@RequestBody MonthlyPlatformRequest request) {
         return statisticsService.getMonthlyPlatformStatics(request);
+    }
+
+    @GetMapping("/ratio/game")
+    public GameRatioEachPlatformResponse getGameRatioEachPlatform(@RequestBody GameRatioEachPlatformRequest request) {
+        return statisticsService.getGameRatioEachPlatform(request);
     }
 }
