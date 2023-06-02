@@ -1,4 +1,4 @@
-package com.game.rmt.domain.product.dto;
+package com.game.rmt.domain.product.dto.request;
 
 import com.game.rmt.global.parent.Filter;
 import lombok.AllArgsConstructor;

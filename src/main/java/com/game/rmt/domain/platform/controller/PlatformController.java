@@ -1,6 +1,6 @@
 package com.game.rmt.domain.platform.controller;
 
-import com.game.rmt.domain.platform.dto.PlatformListResponse;
+import com.game.rmt.domain.platform.dto.response.PlatformListResponse;
 import com.game.rmt.domain.platform.service.PlatformService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -10,6 +10,10 @@ import com.game.rmt.domain.platform.service.PlatformService;
 import com.game.rmt.domain.product.domain.Product;
 import com.game.rmt.domain.product.repository.ProductRepository;
 import com.game.rmt.domain.statistics.dto.*;
+import com.game.rmt.domain.statistics.dto.request.MonthlyGameRequest;
+import com.game.rmt.domain.statistics.dto.request.MonthlyPlatformRequest;
+import com.game.rmt.domain.statistics.dto.response.MonthlyEachGameResponse;
+import com.game.rmt.domain.statistics.dto.response.MonthlyEachPlatformResponse;
 import com.game.rmt.global.errorhandler.exception.ErrorCode;
 import com.game.rmt.global.errorhandler.exception.NotFoundException;
 import com.querydsl.core.types.ConstantImpl;
@@ -114,10 +118,20 @@ class StatisticsServiceTest {
                 .fetchOne();
 
         Account account1 = new Account(99000, LocalDate.now(), fiveThousandJewel);
-        Account account2 = new Account(15000, LocalDate.now(), "note", riotPoint);
+        Account account3 = new Account(99000, LocalDate.parse("2023-05-01"), fiveThousandJewel);
+        Account account4 = new Account(99000, LocalDate.parse("2023-04-01"), fiveThousandJewel);
+        Account account5 = new Account(99000, LocalDate.parse("2023-03-01"), fiveThousandJewel);
+        Account account7 = new Account(99000, LocalDate.parse("2023-02-01"), fiveThousandJewel);
+        Account account6 = new Account(99000, LocalDate.parse("2023-01-01"), fiveThousandJewel);
+        Account account2 = new Account(15000, LocalDate.parse("2023-06-01"), "note", riotPoint);
 
         em.persist(account1);
         em.persist(account2);
+        em.persist(account3);
+        em.persist(account4);
+        em.persist(account5);
+        em.persist(account6);
+        em.persist(account7);
     }
 
     @BeforeEach
@@ -350,6 +364,13 @@ class StatisticsServiceTest {
         // 통계 데이터 변환 작업
         MonthlyEachPlatformResponse response = new MonthlyEachPlatformResponse(findPlatform.getName(), fetch1);
         Assertions.assertThat(fetch1.size()).isEqualTo(1);
+    }
+
+    public void getRatioEachGame() {
+        // 통계 기반 정보 받아오기 : platformIds, startDate, endDate
+        // platformIds의 length가 0일 경우(또는 null) 전체 플랫폼으로 조회
+        // startDate, endDate가 없을 경우 전체 기간으로 조회
+        // 데이터를 담을 DTO : RatioEachGameResponse
     }
 
 }

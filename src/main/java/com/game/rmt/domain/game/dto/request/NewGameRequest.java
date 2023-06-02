@@ -1,4 +1,4 @@
-package com.game.rmt.domain.game.dto;
+package com.game.rmt.domain.game.dto.request;
 
 import com.game.rmt.global.errorhandler.exception.BadRequestException;
 import com.game.rmt.global.parent.CreateRequest;

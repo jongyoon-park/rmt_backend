@@ -3,7 +3,7 @@ package com.game.rmt.domain.game.service;
 import com.game.rmt.domain.account.domain.Account;
 import com.game.rmt.domain.game.domain.Game;
 import com.game.rmt.domain.game.dto.GameDTO;
-import com.game.rmt.domain.game.dto.GameSearchFilter;
+import com.game.rmt.domain.game.dto.request.GameSearchFilter;
 import com.game.rmt.domain.game.repository.GameRepository;
 import com.game.rmt.domain.platform.domain.Platform;
 import com.game.rmt.domain.product.domain.Product;

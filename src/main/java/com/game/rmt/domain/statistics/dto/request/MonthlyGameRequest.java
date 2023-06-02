@@ -1,5 +1,6 @@
-package com.game.rmt.domain.statistics.dto;
+package com.game.rmt.domain.statistics.dto.request;
 
+import com.game.rmt.domain.statistics.dto.RangeDate;
 import com.game.rmt.global.errorhandler.exception.BadRequestException;
 import com.game.rmt.global.parent.CreateRequest;
 import lombok.AllArgsConstructor;

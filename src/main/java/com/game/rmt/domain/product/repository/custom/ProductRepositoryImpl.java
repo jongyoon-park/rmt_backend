@@ -1,9 +1,7 @@
 package com.game.rmt.domain.product.repository.custom;
 
-import com.game.rmt.domain.platform.domain.QPlatform;
 import com.game.rmt.domain.product.domain.Product;
-import com.game.rmt.domain.product.domain.QProduct;
-import com.game.rmt.domain.product.dto.ProductSearchFilter;
+import com.game.rmt.domain.product.dto.request.ProductSearchFilter;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 

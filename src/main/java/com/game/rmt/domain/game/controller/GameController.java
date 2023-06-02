@@ -1,9 +1,9 @@
 package com.game.rmt.domain.game.controller;
 
 import com.game.rmt.domain.game.dto.GameDTO;
-import com.game.rmt.domain.game.dto.GameListResponse;
-import com.game.rmt.domain.game.dto.GameSearchFilter;
-import com.game.rmt.domain.game.dto.NewGameRequest;
+import com.game.rmt.domain.game.dto.response.GameListResponse;
+import com.game.rmt.domain.game.dto.request.GameSearchFilter;
+import com.game.rmt.domain.game.dto.request.NewGameRequest;
 import com.game.rmt.domain.game.service.GameService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
