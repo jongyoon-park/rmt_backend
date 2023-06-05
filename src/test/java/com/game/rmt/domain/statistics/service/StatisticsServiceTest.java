@@ -451,6 +451,10 @@ class StatisticsServiceTest {
         Assertions.assertThat(ratioEachGameDTOList.get(1).getPercentage()).isEqualTo(97.54);
     }
 
+    public void getMonthlyEachPlatformRatioByPreviousYear() {
+
+    }
+
     private double totalPrice(List<GamePriceDTO> priceDTOList) {
         return priceDTOList.stream().mapToInt(GamePriceDTO::getPrice).sum();
     }
