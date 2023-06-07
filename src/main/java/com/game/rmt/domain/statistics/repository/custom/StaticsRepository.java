@@ -25,6 +25,9 @@ public class StaticsRepository {
     private final EntityManager em;
     private final JPAQueryFactory queryFactory;
 
+    private final int ONE_YEAR = 1;
+    private final int THREE_YEARS = 3;
+
     public StaticsRepository(EntityManager em) {
         this.em = em;
         this.queryFactory = new JPAQueryFactory(em);
@@ -39,7 +42,7 @@ public class StaticsRepository {
                 .join(account.product, product)
                 .join(product.game, game)
                 .where(
-                        minusYearByPurchaseDateFromEndDate(LocalDate.now()),
+                        minusYearByPurchaseDateDefaultRange(LocalDate.now()),
                         eqGameId(gameId)
                 )
                 .groupBy(monthFormat)
@@ -177,6 +180,7 @@ public class StaticsRepository {
                 .join(product.game, game)
                 .join(game.platform, platform)
                 .where(
+                        minusYearByPurchaseDateDefaultRange(LocalDate.now()),
                         eqPlatformIds(platformIds)
                 )
                 .groupBy(game.id)
@@ -232,12 +236,16 @@ public class StaticsRepository {
                 .fetch();
     }
 
+    private BooleanExpression minusYearByPurchaseDateDefaultRange(LocalDate currentDate) {
+        return betweenPurchaseDate(currentDate.minusYears(THREE_YEARS), currentDate);
+    }
+
     private BooleanExpression minusYearByPurchaseDateFromEndDate(LocalDate endDate) {
-        return betweenPurchaseDate(endDate.minusYears(1), endDate);
+        return betweenPurchaseDate(endDate.minusYears(ONE_YEAR), endDate);
     }
 
     private BooleanExpression plusYearByPurchaseDateFromStartDate(LocalDate startDate) {
-        return betweenPurchaseDate(startDate, startDate.plusYears(1));
+        return betweenPurchaseDate(startDate, startDate.plusYears(ONE_YEAR));
     }
 
     private BooleanExpression betweenPurchaseDate(LocalDate startDate, LocalDate endDate) {
