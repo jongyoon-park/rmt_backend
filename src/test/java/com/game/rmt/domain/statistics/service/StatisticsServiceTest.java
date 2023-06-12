@@ -565,8 +565,8 @@ class StatisticsServiceTest {
             double currentPrice = fetch1.get(i).getStaticValue();
             double previousPrice = fetch1.get(i - 1).getStaticValue();
 
-            // 비율 구하기
-            double ratio = (currentPrice - previousPrice) / previousPrice * 100.0;
+            // 비율 구하기 -> 소수 2번째자리까지로 반올림
+            double ratio = Math.round((currentPrice - previousPrice) / previousPrice * 100.0 * 100.0) / 100.0;
             ratioList.add(new MonthlyRatioDTO(fetch1.get(i).getMonth(), ratio));
         }
 
