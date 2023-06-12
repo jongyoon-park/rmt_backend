@@ -6,12 +6,14 @@ import com.game.rmt.domain.platform.domain.Platform;
 import com.game.rmt.domain.platform.service.PlatformService;
 import com.game.rmt.domain.statistics.dto.GamePriceDTO;
 import com.game.rmt.domain.statistics.dto.GameRatioDTO;
+import com.game.rmt.domain.statistics.dto.MonthlyRatioDTO;
 import com.game.rmt.domain.statistics.dto.request.GameRatioEachPlatformRequest;
 import com.game.rmt.domain.statistics.dto.response.GameRatioEachPlatformResponse;
 import com.game.rmt.domain.statistics.dto.response.MonthlyEachGameResponse;
 import com.game.rmt.domain.statistics.dto.request.MonthlyGameRequest;
 import com.game.rmt.domain.statistics.dto.request.MonthlyPlatformRequest;
 import com.game.rmt.domain.statistics.dto.MonthlyStaticsDTO;
+import com.game.rmt.domain.statistics.dto.response.MonthlyEachPlatformRatioResponse;
 import com.game.rmt.domain.statistics.repository.custom.StaticsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -58,6 +60,34 @@ public class StatisticsService {
                 getPlatformNames(platformList),
                 convertRatioList(gamePriceDTOList, sumTotalPrice(gamePriceDTOList))
         );
+    }
+
+    public MonthlyEachPlatformRatioResponse getMonthlyEachPlatformRatioByPreviousMonth(MonthlyPlatformRequest request) {
+        Platform findPlatform = validateMonthlyPlatformStatics(request);
+        List<MonthlyStaticsDTO> monthlyStatics = getMonthlyPlatformStaticsByCondition(request);
+
+        return new MonthlyEachPlatformRatioResponse(findPlatform.getName(), getPreviousMonthRatioListByPlatform(monthlyStatics));
+    }
+
+    private List<MonthlyRatioDTO> getPreviousMonthRatioListByPlatform(List<MonthlyStaticsDTO> monthlyStatics) {
+        List<MonthlyRatioDTO> ratioList = new ArrayList<>();
+
+        if (monthlyStatics == null || monthlyStatics.isEmpty()) {
+            return ratioList;
+        }
+
+        for (int i = 0; i < monthlyStatics.size(); i++) {
+            if (i == 0) {
+                continue;
+            }
+
+            double currentPrice = monthlyStatics.get(i).getStaticValue();
+            double previousPrice = monthlyStatics.get(i - 1).getStaticValue();
+
+            ratioList.add(new MonthlyRatioDTO(monthlyStatics.get(i).getMonth(), currentPrice, previousPrice));
+        }
+
+        return ratioList;
     }
 
     private List<Platform> validateGameRatioEachPlatform(GameRatioEachPlatformRequest request) {
