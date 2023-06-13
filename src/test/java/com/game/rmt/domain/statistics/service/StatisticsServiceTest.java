@@ -40,6 +40,7 @@ import static com.game.rmt.domain.account.domain.QAccount.account;
 import static com.game.rmt.domain.game.domain.QGame.game;
 import static com.game.rmt.domain.platform.domain.QPlatform.platform;
 import static com.game.rmt.domain.product.domain.QProduct.product;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
@@ -367,7 +368,7 @@ class StatisticsServiceTest {
 
         // 통계 데이터 변환 작업
         MonthlyEachPlatformResponse response = new MonthlyEachPlatformResponse(findPlatform.getName(), fetch1);
-        Assertions.assertThat(fetch1.size()).isEqualTo(1);
+        assertThat(fetch1.size()).isEqualTo(1);
     }
 
     @Test
@@ -448,7 +449,7 @@ class StatisticsServiceTest {
 //            percentageList.add(Math.round((double) gameTotalPriceDTO.getPrice() / totalPrice * 100.0 * 100.0) / 100.0);
         });
 //        Assertions.assertThat(percentageList.size()).isEqualTo(2);
-        Assertions.assertThat(ratioEachGameDTOList.get(1).getPercentage()).isEqualTo(97.54);
+        assertThat(ratioEachGameDTOList.get(1).getPercentage()).isEqualTo(97.54);
     }
 
     @Test
@@ -570,7 +571,127 @@ class StatisticsServiceTest {
             ratioList.add(new MonthlyRatioDTO(fetch1.get(i).getMonth(), ratio));
         }
 
-        Assertions.assertThat(ratioList.size()).isEqualTo(fetch1.size() - 1);
+        //변환한 값 넣어서 리턴 처리 -> Response DTO 통해서 전달
+
+        assertThat(ratioList.size()).isEqualTo(fetch1.size() - 1);
+    }
+
+    @Test
+    public void getMonthlyEachGameRatioByPreviousMonth() {
+        //request 받기
+        MonthlyGameRequest request = new MonthlyGameRequest((long) 3, LocalDate.parse("2022-06-01"), LocalDate.parse("2022-06-30"));
+
+        //request 유효성 검사
+        request.isValidParam();
+        Game findGame = queryFactory
+                .select(game)
+                .from(game)
+                .where(game.id.eq(request.getGameId()))
+                .fetchFirst();
+
+        if (findGame == null) {
+            throw new NotFoundException(ErrorCode.NOT_FOUND_GAME);
+        }
+
+        // 통계 데이터 구하기
+        em.flush();
+        em.clear();
+
+        LocalDate now = LocalDate.now();
+        StringTemplate formattedDate = Expressions.stringTemplate(
+                "DATE_FORMAT({0}, {1})",
+                account.purchaseDate,
+                ConstantImpl.create("%Y-%m"));
+
+        List<MonthlyStaticsDTO> fetch1 = queryFactory
+                .select(new QMonthlyStaticsDTO(formattedDate, account.price.sum()))
+                .from(account)
+                .join(account.product, product)
+                .join(product.game, game)
+                .where(
+                        account.purchaseDate.between(LocalDate.now().minusYears(1), LocalDate.now()),
+                        account.product.game.id.eq(request.getGameId())
+                )
+                .groupBy(formattedDate)
+                .orderBy(formattedDate.asc())
+                .fetch();
+
+        // 2. startDate만 값이 있을 경우
+        /*SELECT DATE_FORMAT(purchase_date, '%Y-%m'), SUM(price)
+        FROM account a
+        WHERE purchase_date BETWEEN DATE_FORMAT('2023-05-30', '%Y-%m-%d') and DATE_ADD(DATE_FORMAT('2023-05-30', '%Y-%m-%d'), INTERVAL 1 YEAR)
+        GROUP BY DATE_FORMAT(purchase_date, '%Y-%m');*/
+
+        List<MonthlyStaticsDTO> fetch2 = queryFactory
+                .select(new QMonthlyStaticsDTO(formattedDate, account.price.sum()))
+                .from(account)
+                .join(account.product, product)
+                .join(product.game, game)
+                .where(
+                        account.purchaseDate.between(request.getStartDate(), request.getStartDate().plusYears(1)),
+                        account.product.game.id.eq(request.getGameId())
+                )
+                .groupBy(formattedDate)
+                .orderBy(formattedDate.asc())
+                .fetch();
+
+
+        // 3. endDate만 값이 있을 경우
+        /*SELECT DATE_FORMAT(purchase_date, '%Y-%m'), SUM(price)
+        FROM account a
+        WHERE purchase_date BETWEEN DATE_SUB(DATE_FORMAT('2023-05-30', '%Y-%m-%d'), INTERVAL 1 YEAR) and DATE_FORMAT('2023-05-30', '%Y-%m-%d')
+        GROUP BY DATE_FORMAT(purchase_date, '%Y-%m');*/
+        List<MonthlyStaticsDTO> fetch3 = queryFactory
+                .select(new QMonthlyStaticsDTO(formattedDate, account.price.sum()))
+                .from(account)
+                .join(account.product, product)
+                .join(product.game, game)
+                .where(
+                        account.purchaseDate.between(request.getEndDate().minusYears(1), request.getEndDate()),
+                        account.product.game.id.eq(request.getGameId())
+                )
+                .groupBy(formattedDate)
+                .orderBy(formattedDate.asc())
+                .fetch();
+
+        // 4. 둘 다 있는 경우
+        /*SELECT DATE_FORMAT(purchase_date, '%Y-%m'), SUM(price)
+        FROM account a
+        WHERE purchase_date BETWEEN DATE_SUB(DATE_FORMAT('2023-05-30', '%Y-%m-%d'), INTERVAL 1 YEAR) and DATE_FORMAT('2023-06-30', '%Y-%m-%d')
+        GROUP BY DATE_FORMAT(purchase_date, '%Y-%m');*/
+        List<MonthlyStaticsDTO> fetch4 = queryFactory
+                .select(new QMonthlyStaticsDTO(formattedDate, account.price.sum()))
+                .from(account)
+                .join(account.product, product)
+                .join(product.game, game)
+                .where(
+                        account.purchaseDate.between(request.getStartDate(), request.getEndDate()),
+                        account.product.game.id.eq(request.getGameId())
+                )
+                .groupBy(formattedDate)
+                .orderBy(formattedDate.asc())
+                .fetch();
+
+        List<MonthlyRatioDTO> ratioList = new ArrayList<>();
+
+        // 전 달 대비 증감값 목록 구하기
+        for (int i = 0; i < fetch1.size(); i++) {
+            if (i == 0) {
+                continue;
+            }
+
+            double currentPrice = fetch1.get(i).getStaticValue();
+            double previousPrice = fetch1.get(i - 1).getStaticValue();
+
+            // 비율 구하기 -> 소수 2번째자리까지로 반올림
+            double ratio = Math.round((currentPrice - previousPrice) / previousPrice * 100.0 * 100.0) / 100.0;
+            ratioList.add(new MonthlyRatioDTO(fetch1.get(i).getMonth(), ratio));
+        }
+
+        //변환한 값 넣어서 리턴 처리 -> Response DTO 통해서 전달
+        //TODO
+
+        assertThat(ratioList.size()).isEqualTo(fetch1.size() - 1);
     }
 
     private double totalPrice(List<GamePriceDTO> priceDTOList) {
