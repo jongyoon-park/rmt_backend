@@ -9,6 +9,7 @@ import com.game.rmt.domain.statistics.dto.GameRatioDTO;
 import com.game.rmt.domain.statistics.dto.MonthlyRatioDTO;
 import com.game.rmt.domain.statistics.dto.request.GameRatioEachPlatformRequest;
 import com.game.rmt.domain.statistics.dto.response.GameRatioEachPlatformResponse;
+import com.game.rmt.domain.statistics.dto.response.MonthlyEachGameRatioResponse;
 import com.game.rmt.domain.statistics.dto.response.MonthlyEachGameResponse;
 import com.game.rmt.domain.statistics.dto.request.MonthlyGameRequest;
 import com.game.rmt.domain.statistics.dto.request.MonthlyPlatformRequest;
@@ -69,7 +70,35 @@ public class StatisticsService {
         return new MonthlyEachPlatformRatioResponse(findPlatform.getName(), getPreviousMonthRatioListByPlatform(monthlyStatics));
     }
 
+    public MonthlyEachGameRatioResponse getMonthlyEachGameRatioByPreviousMonth(MonthlyGameRequest request) {
+        Game findGame = validateMonthlyGameStatics(request);
+        List<MonthlyStaticsDTO> monthlyStatics = getMonthlyGameStaticsByCondition(request);
+
+        return new MonthlyEachGameRatioResponse(findGame.getName(), getPreviousMonthRatioListByGame(monthlyStatics));
+    }
+
     private List<MonthlyRatioDTO> getPreviousMonthRatioListByPlatform(List<MonthlyStaticsDTO> monthlyStatics) {
+        List<MonthlyRatioDTO> ratioList = new ArrayList<>();
+
+        if (monthlyStatics == null || monthlyStatics.isEmpty()) {
+            return ratioList;
+        }
+
+        for (int i = 0; i < monthlyStatics.size(); i++) {
+            if (i == 0) {
+                continue;
+            }
+
+            double currentPrice = monthlyStatics.get(i).getStaticValue();
+            double previousPrice = monthlyStatics.get(i - 1).getStaticValue();
+
+            ratioList.add(new MonthlyRatioDTO(monthlyStatics.get(i).getMonth(), currentPrice, previousPrice));
+        }
+
+        return ratioList;
+    }
+
+    private List<MonthlyRatioDTO> getPreviousMonthRatioListByGame(List<MonthlyStaticsDTO> monthlyStatics) {
         List<MonthlyRatioDTO> ratioList = new ArrayList<>();
 
         if (monthlyStatics == null || monthlyStatics.isEmpty()) {
